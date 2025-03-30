@@ -4,7 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Editor from "@/pages/Editor";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useEffect } from "react";
 
 function Router() {
@@ -28,7 +27,6 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeToggle />
       <Router />
       <Toaster />
     </QueryClientProvider>
