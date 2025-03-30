@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Editor from "@/pages/Editor";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useEffect } from "react";
 
 function Router() {
   return (
@@ -16,8 +18,17 @@ function Router() {
 }
 
 function App() {
+  // Initialize dark mode based on saved preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeToggle />
       <Router />
       <Toaster />
     </QueryClientProvider>

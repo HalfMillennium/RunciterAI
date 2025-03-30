@@ -33,7 +33,7 @@ const TiptapEditor = ({ content, onUpdate }: TiptapEditorProps) => {
     content,
     editorProps: {
       attributes: {
-        class: 'editor-content prose prose-sm focus:outline-none min-h-[70vh] max-w-none',
+        class: 'editor-content prose prose-sm dark:prose-invert focus:outline-none min-h-[70vh] max-w-none dark:text-gray-200',
       },
     },
     onUpdate: ({ editor }) => {
@@ -58,7 +58,11 @@ const TiptapEditor = ({ content, onUpdate }: TiptapEditorProps) => {
     };
   }, []);
 
-  return <EditorContent editor={editor} />;
+  return (
+    <div className="w-full transition-colors">
+      <EditorContent editor={editor} className="dark:bg-gray-900" />
+    </div>
+  );
 };
 
 export default TiptapEditor;

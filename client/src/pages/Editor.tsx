@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import useDocumentStorage from "@/hooks/useDocumentStorage";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Suggestion } from "@shared/schema";
 
 export default function Editor() {
@@ -134,16 +135,16 @@ export default function Editor() {
   };
 
   return (
-    <div className="bg-[#F7F6F3] min-h-screen font-[Inter] text-[#000000]">
+    <div className="bg-[#F7F6F3] dark:bg-gray-900 min-h-screen font-[Inter] text-[#000000] dark:text-gray-100 transition-colors">
       {/* Header */}
-      <header className="bg-[#ffffff] border-b border-[#EBECED] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      <header className="bg-[#ffffff] dark:bg-gray-800 border-b border-[#EBECED] dark:border-gray-700 px-4 py-3 flex items-center justify-between sticky top-0 z-10 transition-colors">
         <div className="flex items-center">
-          <h1 className="text-lg font-semibold">AI Writing Assistant</h1>
+          <h1 className="text-lg font-semibold dark:text-white">AI Writing Assistant</h1>
         </div>
         <div className="flex items-center space-x-2">
           <Button 
             variant="outline" 
-            className="text-sm text-[#979A9B] hover:text-[#000000] transition"
+            className="text-sm text-[#979A9B] hover:text-[#000000] dark:text-gray-300 dark:hover:text-white transition"
             disabled={generateSuggestionsMutation.isPending}
             onClick={() => generateSuggestionsMutation.mutate()}
           >
@@ -159,6 +160,9 @@ export default function Editor() {
           >
             Save
           </Button>
+          <div className="ml-2">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -176,10 +180,10 @@ export default function Editor() {
         />
 
         {/* Editor */}
-        <div className="flex-1 bg-[#ffffff] rounded-lg shadow-sm mx-4 my-6 p-6 md:max-w-3xl md:mx-auto relative">
+        <div className="flex-1 bg-[#ffffff] dark:bg-gray-800 rounded-lg shadow-sm mx-4 my-6 p-6 md:max-w-3xl md:mx-auto relative transition-colors">
           {isDocumentLoading ? (
             <div className="flex items-center justify-center h-[70vh]">
-              <Loader2 className="h-8 w-8 animate-spin text-[#2D7FF9]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#2D7FF9] dark:text-blue-400" />
             </div>
           ) : (
             <TiptapEditor 
@@ -212,13 +216,13 @@ export default function Editor() {
 
         {/* Mobile Suggestion Panel */}
         <div 
-          className={`md:hidden fixed bottom-0 left-0 right-0 bg-[#EFEFEF] p-4 rounded-t-lg shadow-lg transform transition-transform duration-300 z-10 ${
+          className={`md:hidden fixed bottom-0 left-0 right-0 bg-[#EFEFEF] dark:bg-gray-800 p-4 rounded-t-lg shadow-lg transform transition-transform duration-300 z-10 ${
             isMobilePanelOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
           <div className="flex justify-between items-center mb-3">
-            <h3 className="font-medium text-sm text-[#37352F]">AI Suggestions</h3>
-            <button className="text-[#979A9B]" onClick={() => setIsMobilePanelOpen(false)}>
+            <h3 className="font-medium text-sm text-[#37352F] dark:text-gray-200">AI Suggestions</h3>
+            <button className="text-[#979A9B] dark:text-gray-400" onClick={() => setIsMobilePanelOpen(false)}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>

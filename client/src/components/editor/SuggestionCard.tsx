@@ -52,13 +52,13 @@ const SuggestionCard = ({ suggestion, onAcceptAdd, onAcceptReplace }: Suggestion
   };
   
   return (
-    <div className="bg-[#ffffff] rounded-md p-3 mb-4 shadow-sm">
-      <p className="text-sm font-medium mb-2">{suggestion.prompt}</p>
-      <div className="text-xs text-[#979A9B] mb-3">{suggestion.description}</div>
+    <div className="bg-[#ffffff] dark:bg-gray-700 rounded-md p-3 mb-4 shadow-sm transition-colors">
+      <p className="text-sm font-medium mb-2 dark:text-gray-100">{suggestion.prompt}</p>
+      <div className="text-xs text-[#979A9B] dark:text-gray-400 mb-3 transition-colors">{suggestion.description}</div>
       
       {isGenerating ? (
         <div className="flex justify-center py-1">
-          <Loader2 className="h-4 w-4 animate-spin text-[#2D7FF9]" />
+          <Loader2 className="h-4 w-4 animate-spin text-[#2D7FF9] dark:text-blue-400" />
         </div>
       ) : (
         <div className="flex space-x-2">

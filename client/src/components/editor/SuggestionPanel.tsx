@@ -26,17 +26,17 @@ const SuggestionPanel = ({
       <>
         {isLoading ? (
           Array(3).fill(0).map((_, index) => (
-            <div key={index} className="bg-[#ffffff] rounded-md p-3 mb-4 shadow-sm">
-              <Skeleton className="h-4 w-3/4 mb-2" />
-              <Skeleton className="h-3 w-2/3 mb-3" />
+            <div key={index} className="bg-[#ffffff] dark:bg-gray-700 rounded-md p-3 mb-4 shadow-sm transition-colors">
+              <Skeleton className="h-4 w-3/4 mb-2 dark:bg-gray-600" />
+              <Skeleton className="h-3 w-2/3 mb-3 dark:bg-gray-600" />
               <div className="flex space-x-2">
-                <Skeleton className="h-6 flex-1" />
-                <Skeleton className="h-6 flex-1" />
+                <Skeleton className="h-6 flex-1 dark:bg-gray-600" />
+                <Skeleton className="h-6 flex-1 dark:bg-gray-600" />
               </div>
             </div>
           ))
         ) : suggestions.length === 0 ? (
-          <div className="text-center py-4 text-[#979A9B]">
+          <div className="text-center py-4 text-[#979A9B] dark:text-gray-400 transition-colors">
             No suggestions available
           </div>
         ) : (
@@ -55,26 +55,26 @@ const SuggestionPanel = ({
 
   const panelClasses = `suggestion-panel ${position} ${
     position === 'left' ? 'left' : 'right'
-  } hidden md:block md:w-1/4 p-4 md:sticky md:top-16 md:h-[calc(100vh-4rem)] md:overflow-y-auto hide-scrollbar`;
+  } hidden md:block md:w-1/4 p-4 md:sticky md:top-16 md:h-[calc(100vh-4rem)] md:overflow-y-auto hide-scrollbar transition-colors`;
 
   return (
     <aside className={panelClasses}>
-      <div className="bg-[#EFEFEF] rounded-lg p-4 shadow-sm">
-        <h3 className="font-medium text-sm text-[#37352F] mb-2">{title}</h3>
+      <div className="bg-[#EFEFEF] dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-colors">
+        <h3 className="font-medium text-sm text-[#37352F] dark:text-gray-200 mb-2 transition-colors">{title}</h3>
         
         {isLoading ? (
           Array(3).fill(0).map((_, index) => (
-            <div key={index} className="bg-[#ffffff] rounded-md p-3 mb-4 shadow-sm">
-              <Skeleton className="h-4 w-3/4 mb-2" />
-              <Skeleton className="h-3 w-2/3 mb-3" />
+            <div key={index} className="bg-[#ffffff] dark:bg-gray-700 rounded-md p-3 mb-4 shadow-sm transition-colors">
+              <Skeleton className="h-4 w-3/4 mb-2 dark:bg-gray-600" />
+              <Skeleton className="h-3 w-2/3 mb-3 dark:bg-gray-600" />
               <div className="flex space-x-2">
-                <Skeleton className="h-6 flex-1" />
-                <Skeleton className="h-6 flex-1" />
+                <Skeleton className="h-6 flex-1 dark:bg-gray-600" />
+                <Skeleton className="h-6 flex-1 dark:bg-gray-600" />
               </div>
             </div>
           ))
         ) : suggestions.length === 0 ? (
-          <div className="text-center py-4 text-[#979A9B]">
+          <div className="text-center py-4 text-[#979A9B] dark:text-gray-400 transition-colors">
             No suggestions available
           </div>
         ) : (
