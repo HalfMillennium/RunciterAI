@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 const useDocumentStorage = (documentId: number) => {
   const queryClient = useQueryClient();
   const [localContent, setLocalContent] = useState<string | null>(null);
+  const [localTitle, setLocalTitle] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Fetch document data
@@ -21,12 +22,17 @@ const useDocumentStorage = (documentId: number) => {
     enabled: !!documentId
   });
   
-  // Use local content state if available, otherwise use document content
+  // Use local states if available, otherwise use document data
   useEffect(() => {
-    if (document && localContent === null) {
-      setLocalContent(document.content);
+    if (document) {
+      if (localContent === null) {
+        setLocalContent(document.content);
+      }
+      if (localTitle === null) {
+        setLocalTitle(document.title);
+      }
     }
-  }, [document, localContent]);
+  }, [document, localContent, localTitle]);
   
   // Update document mutation
   const updateDocumentMutation = useMutation({
@@ -50,6 +56,10 @@ const useDocumentStorage = (documentId: number) => {
       setLocalContent(updateData.content as string);
     }
     
+    if ('title' in updateData) {
+      setLocalTitle(updateData.title as string);
+    }
+    
     // Clear previous timeout if it exists
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -71,8 +81,12 @@ const useDocumentStorage = (documentId: number) => {
   }, []);
   
   // Construct the local document representation
-  const localDocument = document && localContent !== null 
-    ? { ...document, content: localContent }
+  const localDocument = document 
+    ? { 
+        ...document, 
+        content: localContent !== null ? localContent : document.content,
+        title: localTitle !== null ? localTitle : document.title
+      }
     : document;
   
   return {
