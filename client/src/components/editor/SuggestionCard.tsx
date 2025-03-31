@@ -52,24 +52,24 @@ const SuggestionCard = ({ suggestion, onAcceptAdd, onAcceptReplace }: Suggestion
   };
   
   return (
-    <div className="bg-[#ffffff] dark:bg-gray-700 rounded-md p-3 mb-4 shadow-sm transition-colors">
-      <p className="text-sm font-medium mb-2 dark:text-gray-100">{suggestion.prompt}</p>
-      <div className="text-xs text-[#979A9B] dark:text-gray-400 mb-3 transition-colors">{suggestion.description}</div>
+    <div className="bg-[#f7f7f7] dark:bg-neutral-800 rounded-md p-3 mb-4 shadow-sm transition-colors">
+      <p className="text-sm font-medium mb-2 text-gray-800 dark:text-gray-200">{suggestion.prompt}</p>
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-3 transition-colors">{suggestion.description}</div>
       
       {isGenerating ? (
         <div className="flex justify-center py-1">
-          <Loader2 className="h-4 w-4 animate-spin text-[#2D7FF9] dark:text-blue-400" />
+          <Loader2 className="h-4 w-4 animate-spin text-blue-500 dark:text-blue-400" />
         </div>
       ) : (
         <div className="flex space-x-2">
           <Button 
-            className="text-xs bg-[#2D7FF9] text-white px-2 py-1 rounded hover:bg-opacity-90 transition flex-1 h-auto"
+            className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition flex-1 h-auto"
             onClick={handleAcceptAdd}
           >
             Accept & Add
           </Button>
           <Button 
-            className="text-xs bg-[#EB5757] text-white px-2 py-1 rounded hover:bg-opacity-90 transition flex-1 h-auto"
+            className="text-xs bg-gray-600 text-white px-2 py-1 rounded hover:bg-gray-700 transition flex-1 h-auto"
             onClick={handleAcceptReplace}
           >
             Accept & Replace

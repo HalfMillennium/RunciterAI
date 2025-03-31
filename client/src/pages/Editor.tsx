@@ -3,13 +3,14 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import TiptapEditor from "@/components/editor/TiptapEditor";
 import SuggestionPanel from "@/components/editor/SuggestionPanel";
+import SuggestionCard from "@/components/editor/SuggestionCard";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Menu } from "lucide-react";
 import useDocumentStorage from "@/hooks/useDocumentStorage";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Sidebar } from "@/components/Sidebar";
 import type { Suggestion } from "@shared/schema";
-import appLogo from "../assets/app_logo.png";
 
 export default function Editor() {
   const { toast } = useToast();
@@ -23,10 +24,10 @@ export default function Editor() {
 
   // Fetch suggestions for the document
   const {
-    data: suggestions = [],
+    data: suggestions = [] as Suggestion[],
     isLoading: isSuggestionsLoading,
     refetch: refetchSuggestions,
-  } = useQuery({
+  } = useQuery<Suggestion[]>({
     queryKey: [`/api/documents/${documentId}/suggestions`],
     enabled: !!documentId,
   });
@@ -153,83 +154,104 @@ export default function Editor() {
   };
 
   return (
-    <div className="bg-[#F7F6F3] dark:bg-gray-900 min-h-screen font-[Inter] text-[#000000] dark:text-gray-100 transition-colors">
-      {/* Header */}
-      <header className="bg-[#ffffff] dark:bg-gray-900 border-b border-[#EBECED] dark:border-b-gray-700 px-4 py-3 flex items-center justify-between sticky top-0 z-10 transition-colors">
-        <div className="flex items-center">
-          <img
-            src={appLogo}
-            className="h-10 object-contain dark:invert"
-            alt="Runciter AI App Logo"
-          />
-        </div>
-        <div className="flex items-center space-x-2 gap-2">
-          <Button
-            variant="outline"
-            className="rounded-xl flex text-sm text-[#979A9B] hover:text-[#000000] dark:text-gray-300 dark:hover:text-white transition"
-            disabled={generateSuggestionsMutation.isPending}
-            onClick={() => generateSuggestionsMutation.mutate()}
-          >
-            {generateSuggestionsMutation.isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              "New Suggestions"
-            )}
-          </Button>
-          <Button className="flex text-sm bg-[#2D7FF9] text-white px-3 py-1 rounded-xl hover:bg-opacity-90 transition">
-            Save
-          </Button>
-          <div className="flex">
+    <div className="flex h-screen overflow-hidden font-[Inter] text-[#000000] dark:text-gray-100 transition-colors">
+      {/* Sidebar */}
+      <Sidebar />
+      
+      <div className="flex-1 flex flex-col overflow-hidden bg-[#ffffff] dark:bg-[#1f1f1f]">
+        {/* Header */}
+        <header className="z-10 bg-[#ffffff] dark:bg-[#1f1f1f] border-b border-[#EBECED] dark:border-neutral-800 px-4 py-3 flex items-center justify-between h-12">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-5 w-5" />
+            </Button>
+            <div className="text-sm text-gray-500 dark:text-gray-400">AI Writing Assistant</div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+              disabled={generateSuggestionsMutation.isPending}
+              onClick={() => generateSuggestionsMutation.mutate()}
+            >
+              {generateSuggestionsMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                "New Suggestions"
+              )}
+            </Button>
             <ThemeToggle />
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="flex flex-col md:flex-row mx-auto relative">
-        {/* Left Suggestion Panel */}
-        <SuggestionPanel
-          title="Expand Your Ideas"
-          position="left"
-          suggestions={leftSuggestions}
-          onAcceptAdd={handleAcceptAdd}
-          onAcceptReplace={handleAcceptReplace}
-          isLoading={
-            isSuggestionsLoading || generateSuggestionsMutation.isPending
-          }
-          isMobile={false}
-        />
-
-        {/* Editor */}
-        <div className="flex-1 bg-[#ffffff] dark:bg-gray-800 rounded-lg shadow-sm mx-4 my-6 p-6 md:max-w-3xl md:mx-auto relative transition-colors">
-          {isDocumentLoading ? (
-            <div className="flex items-center justify-center h-[70vh]">
-              <Loader2 className="h-8 w-8 animate-spin text-[#2D7FF9] dark:text-blue-400" />
+        {/* Main Content Area */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Content Column */}
+          <div className="flex-1 flex overflow-hidden">
+            <div className="flex flex-col flex-1 overflow-auto">
+              {/* Document Title */}
+              <div className="px-4 py-6 md:px-10 md:py-10">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                  {document?.title || "Untitled"}
+                </h1>
+                
+                {/* Editor */}
+                <div className="mt-6">
+                  {isDocumentLoading ? (
+                    <div className="flex items-center justify-center h-[50vh]">
+                      <Loader2 className="h-8 w-8 animate-spin text-[#2D7FF9] dark:text-blue-400" />
+                    </div>
+                  ) : (
+                    <TiptapEditor
+                      content={document?.content || ""}
+                      onUpdate={(content) => updateDocument({ content })}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
-          ) : (
-            <TiptapEditor
-              content={document?.content || ""}
-              onUpdate={(content) => updateDocument({ content })}
-            />
-          )}
+            
+            {/* Right Suggestion Panel */}
+            <div className="hidden md:block w-80 border-l border-[#EBECED] dark:border-neutral-800 bg-[#ffffff] dark:bg-[#1f1f1f] overflow-y-auto">
+              <div className="p-4 sticky top-0 bg-[#ffffff] dark:bg-[#1f1f1f] z-10 border-b border-[#EBECED] dark:border-neutral-800">
+                <h3 className="font-medium text-sm text-gray-500 dark:text-gray-400">AI Suggestions</h3>
+              </div>
+              <div className="p-4">
+                {(isSuggestionsLoading || generateSuggestionsMutation.isPending) ? (
+                  Array(3).fill(0).map((_, index) => (
+                    <div key={index} className="bg-[#f7f7f7] dark:bg-neutral-800 rounded-md p-3 mb-4 shadow-sm transition-colors">
+                      <div className="h-4 w-3/4 mb-2 bg-gray-200 dark:bg-neutral-700 rounded animate-pulse"></div>
+                      <div className="h-3 w-2/3 mb-3 bg-gray-200 dark:bg-neutral-700 rounded animate-pulse"></div>
+                      <div className="flex space-x-2">
+                        <div className="h-6 flex-1 bg-gray-200 dark:bg-neutral-700 rounded animate-pulse"></div>
+                        <div className="h-6 flex-1 bg-gray-200 dark:bg-neutral-700 rounded animate-pulse"></div>
+                      </div>
+                    </div>
+                  ))
+                ) : suggestions.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                    No suggestions available
+                  </div>
+                ) : (
+                  [...leftSuggestions, ...rightSuggestions].map((suggestion) => (
+                    <SuggestionCard
+                      key={suggestion.id}
+                      suggestion={suggestion}
+                      onAcceptAdd={handleAcceptAdd}
+                      onAcceptReplace={handleAcceptReplace}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Right Suggestion Panel */}
-        <SuggestionPanel
-          title="Refine Your Content"
-          position="right"
-          suggestions={rightSuggestions}
-          onAcceptAdd={handleAcceptAdd}
-          onAcceptReplace={handleAcceptReplace}
-          isLoading={
-            isSuggestionsLoading || generateSuggestionsMutation.isPending
-          }
-          isMobile={false}
-        />
-
+        
         {/* Mobile Suggestion Toggle Button */}
         <button
           className="md:hidden fixed bottom-4 right-4 bg-[#2D7FF9] text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg z-20"
@@ -253,16 +275,16 @@ export default function Editor() {
 
         {/* Mobile Suggestion Panel */}
         <div
-          className={`md:hidden fixed bottom-0 left-0 right-0 bg-[#EFEFEF] dark:bg-gray-800 p-4 rounded-t-lg shadow-lg transform transition-transform duration-300 z-10 ${
+          className={`md:hidden fixed bottom-0 left-0 right-0 bg-[#ffffff] dark:bg-[#1f1f1f] p-4 rounded-t-lg shadow-lg transform transition-transform duration-300 z-10 ${
             isMobilePanelOpen ? "translate-y-0" : "translate-y-full"
           }`}
         >
           <div className="flex justify-between items-center mb-3">
-            <h3 className="font-medium text-sm text-[#37352F] dark:text-gray-200">
+            <h3 className="font-medium text-sm text-gray-600 dark:text-gray-300">
               AI Suggestions
             </h3>
             <button
-              className="text-[#979A9B] dark:text-gray-400"
+              className="text-gray-500 dark:text-gray-400"
               onClick={() => setIsMobilePanelOpen(false)}
             >
               <svg
@@ -296,7 +318,7 @@ export default function Editor() {
             />
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

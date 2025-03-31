@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useCallback, useRef } from "react";
+import './editor.css';
 
 interface TiptapEditorProps {
   content: string;
@@ -28,16 +29,20 @@ const TiptapEditor = ({ content, onUpdate }: TiptapEditorProps) => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3]
+        }
+      }),
       Placeholder.configure({
-        placeholder: "Start typing...",
+        placeholder: 'Type "/" for commands, or start writing...',
       }),
     ],
     content,
     editorProps: {
       attributes: {
         class:
-          "editor-content prose prose-sm dark:prose-invert focus:outline-none min-h-[70vh] max-w-none dark:text-gray-200",
+          "editor-content prose prose-lg dark:prose-invert focus:outline-none min-h-[60vh] max-w-none text-gray-800 dark:text-gray-200",
       },
     },
     onUpdate: ({ editor }) => {
@@ -64,7 +69,7 @@ const TiptapEditor = ({ content, onUpdate }: TiptapEditorProps) => {
 
   return (
     <div className="w-full transition-colors">
-      <EditorContent editor={editor} className="dark:bg-gray-800" />
+      <EditorContent editor={editor} />
     </div>
   );
 };
