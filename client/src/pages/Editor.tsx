@@ -12,10 +12,13 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Sidebar } from "@/components/Sidebar";
 import type { Suggestion } from "@shared/schema";
 
-export default function Editor() {
+interface EditorProps {
+  documentId?: number;
+}
+
+export default function Editor({ documentId = 1 }: EditorProps) {
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
   const { toast } = useToast();
-  const documentId = 1; // For simplicity we're using a fixed document ID
   const {
     document,
     updateDocument,

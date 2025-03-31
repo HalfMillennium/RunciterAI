@@ -14,6 +14,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   
   // Document methods
+  getAllDocuments(): Promise<Document[]>;
   getDocument(id: number): Promise<Document | undefined>;
   createDocument(document: InsertDocument): Promise<Document>;
   updateDocument(id: number, document: Partial<Document>): Promise<Document | undefined>;
@@ -69,6 +70,10 @@ export class MemStorage implements IStorage {
   }
   
   // Document methods
+  async getAllDocuments(): Promise<Document[]> {
+    return Array.from(this.documents.values());
+  }
+  
   async getDocument(id: number): Promise<Document | undefined> {
     return this.documents.get(id);
   }

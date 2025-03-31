@@ -10,6 +10,9 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Editor} />
+      <Route path="/document/:id">
+        {params => <Editor key={params.id} documentId={parseInt(params.id, 10)} />}
+      </Route>
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>

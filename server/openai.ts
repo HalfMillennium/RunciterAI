@@ -12,6 +12,7 @@ const openai = new OpenAI({
 export async function generateContent(request: GenerateContentRequest): Promise<string> {
   try {
     const { documentContent, prompt } = request;
+    const safeDocumentContent = documentContent || "";
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -24,9 +25,9 @@ export async function generateContent(request: GenerateContentRequest): Promise<
           role: "user",
           content: `
 Current document content:
-${documentContent}
+${safeDocumentContent}
 
-Based on this content, please ${prompt}
+Based on this ${safeDocumentContent.trim() ? "content" : "empty document"}, please ${prompt}
 
 Format your response appropriately with line breaks, lists, and proper paragraph structure as needed.
 `
@@ -45,9 +46,10 @@ Format your response appropriately with line breaks, lists, and proper paragraph
 /**
  * Generate suggestion prompts based on the current document content
  */
-export async function generateSuggestions(documentContent: string): Promise<{ prompt: string, description: string, position: string }[]> {
+export async function generateSuggestions(documentContent: string | null): Promise<{ prompt: string, description: string, position: string }[]> {
   try {
-    if (!documentContent || documentContent.trim() === "") {
+    const safeDocumentContent = documentContent || "";
+    if (safeDocumentContent.trim() === "") {
       return getDefaultSuggestions();
     }
     
@@ -65,7 +67,7 @@ Based on the following document content, generate 4-6 suggestion prompts that wo
 These should be creative and specific to the content.
 
 Document content:
-${documentContent}
+${safeDocumentContent}
 
 Respond with JSON in the following format:
 [

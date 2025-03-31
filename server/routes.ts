@@ -10,6 +10,17 @@ import {
 import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Get all documents
+  app.get("/api/documents", async (_req: Request, res: Response) => {
+    try {
+      const documents = await storage.getAllDocuments();
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
   // Get document by ID
   app.get("/api/documents/:id", async (req: Request, res: Response) => {
     try {
