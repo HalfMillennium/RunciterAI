@@ -2,16 +2,97 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateContent, generateSuggestions } from "./openai";
+import { authenticate, register, isAuthenticated } from "./auth";
 import { 
   generateContentSchema, 
   insertDocumentSchema,
-  insertSuggestionSchema
+  insertSuggestionSchema,
+  insertUserSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get all documents
-  app.get("/api/documents", async (_req: Request, res: Response) => {
+  // Authentication routes
+  
+  // Register a new user
+  app.post("/api/auth/register", async (req: Request, res: Response) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      const { username, password } = userData;
+      
+      const user = await register(username, password);
+      res.status(201).json(user);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid user data", errors: error.errors });
+      }
+      console.error("Error registering user:", error);
+      res.status(400).json({ message: error.message || "Failed to register user" });
+    }
+  });
+  
+  // Login
+  app.post("/api/auth/login", async (req: Request, res: Response) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+      }
+      
+      const user = await authenticate(username, password);
+      
+      // Set user ID in session
+      req.session.userId = user.id;
+      
+      res.json(user);
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(401).json({ message: error.message || "Invalid username or password" });
+    }
+  });
+  
+  // Logout
+  app.post("/api/auth/logout", (req: Request, res: Response) => {
+    req.session.destroy(err => {
+      if (err) {
+        console.error("Error during logout:", err);
+        return res.status(500).json({ message: "Failed to logout" });
+      }
+      
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+  
+  // Get current user
+  app.get("/api/auth/me", async (req: Request, res: Response) => {
+    try {
+      const userId = req.session.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        // Clear invalid session
+        req.session.destroy(err => {
+          if (err) console.error("Error clearing invalid session:", err);
+        });
+        return res.status(401).json({ message: "User not found" });
+      }
+      
+      // Return user without password
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+  // Get all documents (protected route)
+  app.get("/api/documents", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const documents = await storage.getAllDocuments();
       res.json(documents);
@@ -41,8 +122,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Create a new document
-  app.post("/api/documents", async (req: Request, res: Response) => {
+  // Create a new document (protected route)
+  app.post("/api/documents", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const documentData = insertDocumentSchema.parse(req.body);
       const document = await storage.createDocument(documentData);
@@ -56,8 +137,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Update an existing document
-  app.patch("/api/documents/:id", async (req: Request, res: Response) => {
+  // Update an existing document (protected route)
+  app.patch("/api/documents/:id", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -77,8 +158,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Get suggestions for a document
-  app.get("/api/documents/:id/suggestions", async (req: Request, res: Response) => {
+  // Get suggestions for a document (protected route)
+  app.get("/api/documents/:id/suggestions", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -98,8 +179,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Generate suggestions for a document
-  app.post("/api/documents/:id/generate-suggestions", async (req: Request, res: Response) => {
+  // Generate suggestions for a document (protected route)
+  app.post("/api/documents/:id/generate-suggestions", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -139,8 +220,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Generate content based on a suggestion
-  app.post("/api/suggestions/:id/generate", async (req: Request, res: Response) => {
+  // Generate content based on a suggestion (protected route)
+  app.post("/api/suggestions/:id/generate", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
