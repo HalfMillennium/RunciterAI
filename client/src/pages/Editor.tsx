@@ -12,13 +12,10 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Sidebar } from "@/components/Sidebar";
 import type { Suggestion } from "@shared/schema";
 
-interface EditorProps {
-  documentId?: number;
-}
-
-export default function Editor({ documentId = 1 }: EditorProps) {
-  const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
+export default function Editor() {
   const { toast } = useToast();
+  const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
+  const documentId = 1; // For simplicity we're using a fixed document ID
   const {
     document,
     updateDocument,
@@ -199,18 +196,9 @@ export default function Editor({ documentId = 1 }: EditorProps) {
             <div className="flex flex-col flex-1 overflow-auto">
               {/* Document Title */}
               <div className="px-4 py-6 md:px-10 md:py-10">
-                <div className="relative group mb-2">
-                  <input
-                    type="text"
-                    value={document?.title || "Untitled"}
-                    onChange={(e) => updateDocument({ title: e.target.value })}
-                    className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white w-full bg-transparent border-0 border-b border-transparent hover:border-gray-200 dark:hover:border-gray-700 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 p-0 transition-colors"
-                    placeholder="Untitled"
-                  />
-                  <div className="absolute inset-y-0 right-0 hidden group-hover:flex items-center pointer-events-none">
-                    <span className="text-xs text-gray-400 dark:text-gray-500">Click to edit</span>
-                  </div>
-                </div>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                  {document?.title || "Untitled"}
+                </h1>
                 
                 {/* Editor */}
                 <div className="mt-6">
