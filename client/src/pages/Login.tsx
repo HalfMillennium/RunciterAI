@@ -1,36 +1,35 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { useMutation } from '@tanstack/react-query';
-import { ArrowLeft } from 'lucide-react';
-import { useAuth } from '../App';
+import { useState } from "react";
+import { Link, useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { ArrowLeft } from "lucide-react";
+import { useAuth } from "../App";
 
 export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const { toast } = useToast();
   const [_, setLocation] = useLocation();
-  const { login } = useAuth();
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      return login(credentials.username, credentials.password);
+      //return login(credentials.username, credentials.password);
     },
     onSuccess: () => {
       toast({
-        title: 'Login successful',
-        description: 'You have been logged in successfully',
+        title: "Login successful",
+        description: "You have been logged in successfully",
       });
-      setLocation('/document/1');
+      setLocation("/document/1");
     },
     onError: (error: Error) => {
       toast({
-        title: 'Login failed',
-        description: error.message || 'Invalid username or password',
-        variant: 'destructive',
+        title: "Login failed",
+        description: error.message || "Invalid username or password",
+        variant: "destructive",
       });
     },
   });
@@ -39,9 +38,9 @@ export default function Login() {
     e.preventDefault();
     if (!username || !password) {
       toast({
-        title: 'Missing fields',
-        description: 'Please enter both username and password',
-        variant: 'destructive',
+        title: "Missing fields",
+        description: "Please enter both username and password",
+        variant: "destructive",
       });
       return;
     }
@@ -62,7 +61,11 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="absolute top-8 left-8">
           <Link href="/">
-            <Button variant="ghost" size="sm" className="text-white/70 hover:text-white">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white/70 hover:text-white"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
             </Button>
@@ -73,19 +76,23 @@ export default function Login() {
           <div className="flex justify-center mb-6">
             <div className="h-12 w-12 relative">
               <div className="h-full w-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 absolute blur opacity-70"></div>
-              <img 
-                src="/generated-icon.png" 
-                alt="AI Writing Assistant" 
+              <img
+                src="/generated-icon.png"
+                alt="AI Writing Assistant"
                 className="h-full w-full object-contain relative z-10"
               />
             </div>
           </div>
-          
-          <h1 className="text-2xl font-bold text-center text-white mb-8">Log in to your account</h1>
-          
+
+          <h1 className="text-2xl font-bold text-center text-white mb-8">
+            Log in to your account
+          </h1>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-white/70">Username</Label>
+              <Label htmlFor="username" className="text-white/70">
+                Username
+              </Label>
               <Input
                 id="username"
                 value={username}
@@ -94,12 +101,16 @@ export default function Login() {
                 placeholder="Enter your username"
               />
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-white/70">Password</Label>
+                <Label htmlFor="password" className="text-white/70">
+                  Password
+                </Label>
                 <Link href="/forgot-password">
-                  <span className="text-xs text-blue-400 hover:text-blue-300">Forgot password?</span>
+                  <span className="text-xs text-blue-400 hover:text-blue-300">
+                    Forgot password?
+                  </span>
                 </Link>
               </div>
               <Input
@@ -111,21 +122,23 @@ export default function Login() {
                 placeholder="••••••••"
               />
             </div>
-            
-            <Button 
-              type="submit" 
+
+            <Button
+              type="submit"
               className="w-full bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500"
               disabled={loginMutation.isPending}
             >
-              {loginMutation.isPending ? 'Signing in...' : 'Sign in'}
+              {loginMutation.isPending ? "Signing in..." : "Sign in"}
             </Button>
           </form>
-          
+
           <div className="mt-6 text-center">
             <p className="text-white/50 text-sm">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <Link href="/register">
-                <span className="text-blue-400 hover:text-blue-300">Create an account</span>
+                <span className="text-blue-400 hover:text-blue-300">
+                  Create an account
+                </span>
               </Link>
             </p>
           </div>

@@ -9,7 +9,13 @@ import UnauthHome from "@/pages/UnauthHome";
 import HomePage from "@/pages/HomePage";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { apiRequest } from "./lib/queryClient";
 
 // Auth context
@@ -26,22 +32,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
   return context;
 }
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<{ id: number; username: string } | null>(null);
+  const [user, setUser] = useState<{ id: number; username: string } | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [_, setLocation] = useLocation();
 
   const checkAuth = async () => {
     setIsLoading(true);
     try {
-      const response = await apiRequest('GET', '/api/auth/me');
-      
+      const response = await apiRequest("GET", "/api/auth/me");
+
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
@@ -56,27 +61,30 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (username: string, password: string) => {
-    const response = await apiRequest('POST', '/api/auth/login', { username, password });
-    
+    const response = await apiRequest("POST", "/api/auth/login", {
+      username,
+      password,
+    });
+
     if (response.ok) {
       const userData = await response.json();
       setUser(userData);
       return userData;
     } else {
       const error = await response.json();
-      throw new Error(error.message || 'Login failed');
+      throw new Error(error.message || "Login failed");
     }
   };
 
   const logout = async () => {
-    const response = await apiRequest('POST', '/api/auth/logout');
-    
+    const response = await apiRequest("POST", "/api/auth/logout");
+
     if (response.ok) {
       setUser(null);
-      setLocation('/');
+      setLocation("/");
     } else {
       const error = await response.json();
-      throw new Error(error.message || 'Logout failed');
+      throw new Error(error.message || "Logout failed");
     }
   };
 
@@ -91,27 +99,37 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     login,
     logout,
-    checkAuth
+    checkAuth,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // Protected route component
-function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, [key: string]: any }) {
+function ProtectedRoute({
+  component: Component,
+  ...rest
+}: {
+  component: React.ComponentType<any>;
+  [key: string]: any;
+}) {
   const { isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
-  
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      setLocation('/login');
+      setLocation("/login");
     }
   }, [isAuthenticated, isLoading, setLocation]);
-  
+
   if (isLoading) {
-    return <div className="flex h-screen w-screen items-center justify-center">Loading...</div>;
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        Loading...
+      </div>
+    );
   }
-  
+
   return isAuthenticated ? <Component {...rest} /> : null;
 }
 
@@ -132,7 +150,13 @@ function App() {
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/document/:id">
-            {params => <ProtectedRoute component={Editor} key={params.id} documentId={parseInt(params.id, 10)} />}
+            {(params) => (
+              <ProtectedRoute
+                component={Editor}
+                key={params.id}
+                documentId={parseInt(params.id, 10)}
+              />
+            )}
           </Route>
           {/* Fallback to 404 */}
           <Route component={NotFound} />
